@@ -57,18 +57,18 @@ education:
   - area: PhD Operations Research
     institution: MIT
     icon: ""
-    date_start: 2006-09-01
-    date_end: 2010-06-30
+    #date_start: 2006-09-01
+    #date_end: 2010-06-30
     #summary: |
     #  Thesis on _..._. Supervised 
     #button:
     #  text: 'Read Thesis'
     #  url: 'https://example.com/thesis.pdf'
-  - area: MS Engineering Sciences
+  - area: SM Engineering Sciences
     institution: Harvard University
     icon: ""
-    date_start: 2004-08-01
-    date_end: 2006-05-01
+    #date_start: 2004-08-01
+    #date_end: 2006-05-01
     summary: |
       GPA: 3.97/4.0
 
@@ -76,8 +76,8 @@ education:
   - area: BS Electrical Engineering and Computer Science
     institution: Yale University
     icon: ""
-    date_start: 2002-08-01
-    date_end: 2004-05-31
+    #date_start: 2002-08-01
+    #date_end: 2004-05-31
     summary: |
       GPA: 3.92/4.0
 
