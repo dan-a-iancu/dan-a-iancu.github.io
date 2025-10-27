@@ -36,8 +36,6 @@ profiles:
   - icon: at-symbol
     url: 'mailto:daniancu@stanford.edu'
     label: E-mail Me
-  #- icon: brands/x
-  #  url: https://twitter.com/AlexAIResearch
   - icon: brands/github
     url: https://github.com/dan-a-iancu
   - icon: brands/linkedin
