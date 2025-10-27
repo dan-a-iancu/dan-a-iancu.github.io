@@ -1,16 +1,16 @@
 ---
 # Display name
-title: Alex Johnson
+title: Dan Andrei Iancu
 
 # Name pronunciation (optional)
 name_pronunciation: ''
 
 # Full name (for SEO)
-first_name: Alex
-last_name: Johnson
+first_name: Dan Andrei
+last_name: Iancu
 
 # Pronouns (optional)
-pronouns: he/him
+# pronouns: he/him
 
 # Status emoji
 status:
@@ -23,44 +23,46 @@ superuser: true
 highlight_name: true
 
 # Role/position/tagline
-role: Senior AI Research Scientist
+role: Associate Professor of Operations, Information and Technology 
 
 # Organizations/Affiliations to display in Biography blox
 organizations:
-  - name: Meta AI
-    url: https://ai.meta.com/
+  - name: Stanford University Graduate School of Business
+    url: https://gsb.stanford.edu/
 
 # Social network links
 # Need to use another icon? Simply download the SVG icon to your `assets/media/icons/` folder.
 profiles:
   - icon: at-symbol
-    url: 'mailto:alex.johnson@meta.com'
+    url: 'mailto:daniancu@stanford.edu'
     label: E-mail Me
-  - icon: brands/x
-    url: https://twitter.com/AlexAIResearch
+  #- icon: brands/x
+  #  url: https://twitter.com/AlexAIResearch
   - icon: brands/github
-    url: https://github.com/alexjohnsonai
+    url: https://github.com/dan-a-iancu
   - icon: brands/linkedin
-    url: https://www.linkedin.com/in/alexjohnsonai/
+    url: https://www.linkedin.com/in/daniancu/
   - icon: academicons/google-scholar
-    url: https://scholar.google.com/citations?user=alexjohnson
+    url: https://scholar.google.com/citations?user=daniancu
   - icon: academicons/orcid
-    url: https://orcid.org/0000-0002-1825-0097
+    url: https://orcid.org/0000-0001-9890-0928
 
 interests:
-  - Large Language Models
-  - Computer Vision
-  - Reinforcement Learning
-  - AI Ethics
+  - Optimization and Prescriptive Analytics
+  - Responsible AI
+  - Sustainable Operatins
+  - Supply Chain Management
+  - FinTech
+  - Healthcare
 
 education:
-  - area: PhD Computer Science (AI Focus)
-    institution: Stanford University
+  - area: PhD Operations Research
+    institution: MIT
     icon: ""
-    date_start: 2015-09-01
-    date_end: 2019-06-30
-    summary: |
-      Thesis on _Scaling Laws for Neural Language Models_. Supervised by Prof. Andrew Ng. Published 5 papers in NeurIPS and ICML, with 2 best paper awards.
+    date_start: 2006-09-01
+    date_end: 2010-06-30
+    #summary: |
+    #  Thesis on _..._. Supervised 
     button:
       text: 'Read Thesis'
       url: 'https://example.com/thesis.pdf'
