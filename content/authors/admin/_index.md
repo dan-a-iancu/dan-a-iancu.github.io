@@ -67,8 +67,8 @@ education:
   - area: MS Engineering Sciences
     institution: Harvard University
     icon: ""
-    date_start: 2004-08
-    date_end: 2006-05
+    date_start: 2004-08-01
+    date_end: 2006-05-01
     summary: |
       GPA: 3.97/4.0
 
@@ -76,8 +76,8 @@ education:
   - area: BS Electrical Engineering and Computer Science
     institution: Yale University
     icon: ""
-    date_start: 2002-08
-    date_end: 2004-05
+    date_start: 2002-08-01
+    date_end: 2004-05-31
     summary: |
       GPA: 3.92/4.0
 
