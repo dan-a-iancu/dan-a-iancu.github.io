@@ -1,0 +1,8 @@
+# Site i18n overrides. Hugo merges these over the theme's i18n/en.yaml.
+
+# The publication metadata row that renders `abstract:` front matter. We use that
+# field for a short plain-language SUMMARY rather than the paper's formal abstract,
+# so the label is renamed to match. See layouts/_shortcodes/paper-awards.html and
+# MIGRATION.md for the wider publication-page treatment.
+- id: abstract
+  translation: Summary

@@ -1,0 +1,25 @@
+# Navigation Links
+#   `weight` sets the order the links appear in.
+#   (The template's original note here described linking to `content/home/` widgets
+#   with a `#` hash URL -- a HugoBlox v2 mechanism this site does not use. Removed
+#   so it cannot mislead.)
+
+main:
+  # Work first, reference material last. "Home" is deliberately absent: the
+  # "Dan A. Iancu" navbar brand already links to `/`, so a Home item duplicated it.
+  # Order set by the owner on 2026-09-06.
+  - name: Research
+    url: /research/
+    weight: 10
+  - name: Teaching
+    url: /teaching/
+    weight: 20
+  - name: Students
+    url: /students/
+    weight: 30
+  - name: Bio
+    url: /bio/
+    weight: 40
+  - name: CV
+    url: /uploads/cv.pdf
+    weight: 50

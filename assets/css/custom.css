@@ -1,0 +1,850 @@
+/* Site-specific CSS. Loaded automatically by the theme's site_head.html when
+   assets/css/custom.css exists, as a separate stylesheet AFTER the compiled
+   Tailwind bundle -- so plain overrides here win without touching the theme. */
+
+/* ---------------------------------------------------------------------------
+   Home hero: let the bio column fill its grid column.
+
+   resume-biography-3 is a 4/8 grid at md+. At a 1440px viewport its right
+   column is ~843px wide and correctly balanced (73px gap on each side of the
+   max-w-7xl wrapper). But the theme caps the text inside it twice -- Tailwind's
+   `.prose` at 65ch (~736px) and `blox/biography.css` `.bio-text` at 680px --
+   and both are flush left. The result was ~235px of dead space on the right
+   against a 73px margin on the left, which read as the whole page being shifted
+   left.
+
+   Scoped to `.blox-resume-biography-3` so the centred `resume-biography` block
+   used on /bio/ keeps the theme's narrower, more readable measure.
+   --------------------------------------------------------------------------- */
+.blox-resume-biography-3 .prose,
+.blox-resume-biography-3 .bio-text {
+  max-width: 100%;
+}
+
+/* And narrow the hero wrapper from max-w-7xl (80rem) to 72rem. Filling the
+   column alone balanced the margins but pushed the line measure to ~78
+   characters, which is past comfortable for body text. Narrowing the wrapper
+   moves the whole hero inward -- a larger left margin, so the content sits
+   further right -- while bringing the filled column back to a readable ~71
+   characters. Left and right gaps stay equal. */
+.blox-resume-biography-3 .max-w-7xl {
+  max-width: 72rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Inline "Summary" disclosure on publication lists (views/citation-summary.html).
+
+   The toggle must sit on the SAME row as the PDF / Online companion / DOI links
+   and come first, while the expanded panel spans the full width of the entry.
+
+   `display: contents` on the <details> is what makes that possible: it removes the
+   details' own box, so its <summary> becomes a direct flex item of .hb-links-row
+   (aligned with the link buttons) and its panel becomes another flex item, which
+   flex-basis:100% then drops onto its own full-width line. Wrapping the panel in a
+   normal inline/inline-block <details> instead constrains it to the toggle's width.
+   --------------------------------------------------------------------------- */
+.hb-links-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;      /* the fix for the toggle sitting below the buttons */
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+details.hb-inline-summary {
+  display: contents;
+}
+/* REQUIRED with display:contents. The UA stylesheet hides a closed <details>'s
+   non-summary children via the details box itself; removing that box with
+   display:contents removes the hiding too, so the panel stayed permanently open
+   AND -- being a full-width flex item ordered before them -- pushed the PDF/DOI
+   buttons onto a second row. Hide it explicitly instead. */
+details.hb-inline-summary:not([open]) > .hb-inline-summary-body {
+  display: none;
+}
+details.hb-inline-summary > summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+details.hb-inline-summary > summary::-webkit-details-marker { display: none; }
+
+/* The label is a sentence-case question, so it overrides .hb-attachment-link's
+   `uppercase` + `font-semibold` + wide tracking. "WHAT'S THIS ABOUT?" in bold caps
+   shouts next to short labels like PDF and DOI, and reads oddly as a question. The
+   lighter treatment also usefully distinguishes this control -- which expands in
+   place -- from its neighbours, which all navigate away. */
+.hb-summary-toggle {
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: normal;
+}
+
+/* An inline SVG cannot be swapped by CSS, so both icons are in the markup and one
+   is hidden per state. */
+details.hb-inline-summary:not([open]) .hb-ico-open { display: none; }
+details.hb-inline-summary[open] .hb-ico-closed { display: none; }
+.hb-inline-summary .hb-ico { display: inline-flex; align-items: center; }
+.hb-inline-summary-body {
+  flex: 0 0 100%;
+  margin: 0.15rem 0 0.25rem;
+  padding: 0.65rem 0.9rem;
+  border-left: 3px solid var(--color-gray-300, #d1d5db);
+  border-radius: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-gray-700, #374151);
+}
+@media (prefers-color-scheme: dark) {
+  .hb-inline-summary-body {
+    border-left-color: var(--color-gray-600, #4b5563);
+    color: var(--color-gray-300, #d1d5db);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   CONTENT WIDTH
+
+   The theme caps body content at `max-w-prose` (65ch, ~736px) for markdown and
+   metadata, and `max-w-3xl` (768px) for publication lists. On a 1440px screen that
+   left ~340px of dead margin each side.
+
+   One knob below sets the shared measure. 60rem (960px) is roughly 30% wider than
+   the theme default while staying inside a readable line length: the theme renders
+   body copy at `prose-xl` on large screens, so 960px is about 75-80 characters --
+   at the upper end of comfortable, not past it. Raising this much further would
+   start to hurt paragraph reading even though it would suit the publication lists,
+   which are short lines and would happily go wider.
+
+   Deliberately NOT applied to the hero (.blox-resume-biography-3): that block is a
+   4/8 two-column grid whose measure was tuned separately, and widening it here
+   would undo that.
+   --------------------------------------------------------------------------- */
+:root {
+  --site-content-max: 60rem;
+}
+
+/* markdown blocks: the title wrapper and the prose body */
+.blox-markdown .max-w-prose,
+.blox-markdown .prose.max-w-prose,
+/* collection blocks: section titles and the citation list container */
+.blox-collection .max-w-prose,
+.blox-collection .container.max-w-3xl,
+/* our own local blocks */
+.blox-topic-filter .max-w-prose,
+.blox-awards-compact .max-w-prose,
+.blox-awards-compact .container.max-w-3xl {
+  max-width: var(--site-content-max);
+}
+
+/* ---------------------------------------------------------------------------
+   Teaching evaluation tables (/teaching/evaluations/).
+
+   Scoped by `design.css_class: "eval-tables"` on that page's markdown block, NOT
+   by a heading id. An earlier version keyed on
+   `#optimization-and-simulation-modeling--stanford-gsb + table`, which works until
+   someone rewords the heading -- the id changes, the selector stops matching and
+   the styling vanishes with no error anywhere. The class survives any rewording,
+   and it reaches all four tables on the page rather than only the first.
+
+   Desktop: the theme's automatic table layout was wrapping short labels such as
+   "OIT 247 (Accelerated)" while over-feeding the year column. `nowrap` on the
+   first two columns fixes that without magic pixel widths -- auto layout then
+   allocates exactly what those cells need, which also keeps the third table
+   ("Year and campus", no course column) correct.
+
+   Overflow: the widest table needs ~918px of min-content, more than the 960px
+   content column can give up, so it pushed the whole PAGE sideways -- 63px at
+   375px, and 32px at exactly 1024px once `nowrap` raised the min-content further.
+   Each table is therefore wrapped in `<div class="eval-scroll">` in the markdown
+   and that div scrolls.
+
+   The wrapper is what makes this correct, and styling the table itself is not a
+   substitute: `display: block; width: max-content` on the <table> made the table
+   as wide as its content, which then widened the `prose` parent to 918px and left
+   the page 264px wider than a 375px viewport -- worse than the bug it replaced.
+   Only a separate scroll container decouples the table's width from its parent's.
+   With that in place `nowrap` is safe, because a too-wide table scrolls instead
+   of pushing.
+   --------------------------------------------------------------------------- */
+.eval-scroll {
+  overflow-x: auto;
+}
+/* And the wrapper only helps if its parent will actually shrink. The block's prose
+   container is a flex item of a `flex flex-col items-center` wrapper, so on the
+   cross axis it is sized to fit-content -- which means max(min-content, available),
+   and the table's min-content won that comparison, stretching the prose to 516px
+   inside a 360px column and taking the page with it. `align-self: stretch` makes it
+   fill the column instead, at which point the scroll container has something to
+   scroll against. Note that `min-width: 0` -- the usual flex overflow remedy -- does
+   nothing here, because the item is not being *shrunk* by flex; it is being *sized*
+   by align-items. */
+.eval-tables .prose {
+  align-self: stretch;
+}
+@media (min-width: 768px) {
+  .eval-tables table th:first-child,
+  .eval-tables table td:first-child,
+  .eval-tables table th:nth-child(2),
+  .eval-tables table td:nth-child(2) {
+    white-space: nowrap;
+  }
+}
+
+/* the filter chip row, so it lines up with the lists it filters */
+.tf-wrap {
+  max-width: var(--site-content-max);
+  margin-inline: auto;          /* centred on narrow screens; left-inset at lg below */
+  padding-inline: 1.5rem;
+}
+/* Centred below lg, matching the rest of the content; overridden at lg. */
+.tf-chips, .tf-bar { justify-content: center; }
+
+/* Publication detail pages: the label/value metadata grid holding Summary, Type
+   and Publication. It is a grid rather than running prose, so the 65ch cap bought
+   nothing and just made the Summary column cramped. */
+.article-container .max-w-prose.grid,
+main .max-w-prose.grid {
+  max-width: var(--site-content-max);
+}
+
+/* ---------------------------------------------------------------------------
+   Collapse the empty table of contents on publication pages.
+
+   single.html lays out sidebar (256px) + TOC (256px) + article inside a 1280px
+   flex container, so on a publication page `main` gets only 768px -- and the
+   metadata grid inside it cannot reach the content width set above no matter what
+   max-width it is given. A paper stub has no headings, so that TOC renders with
+   zero links and the 256px is pure waste.
+
+   `:not(:has(a))` means this only collapses a TOC that is genuinely empty; pages
+   with real headings (the course/docs pages) keep theirs.
+   --------------------------------------------------------------------------- */
+nav.hb-toc:not(:has(a)) {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Research page layout experiments (used by /research-preview/).
+
+   Plain CSS classes rather than Tailwind utilities, because these are applied to
+   raw HTML written inside content markdown -- and utility classes that appear only
+   in content depend on Tailwind's content scan, which is how you end up with a
+   silently unstyled layout.
+   --------------------------------------------------------------------------- */
+
+/* (a) Word cloud beside the research statement instead of stacked above it. */
+.rp-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+  align-items: start;   /* top-aligned reads better than centred when the text is
+                           much taller than the image */
+}
+@media (min-width: 768px) {
+  /* Column 1 is the wider one and holds the TEXT; the media is moved into column 2
+     by `order: 2` below. Prose needs the room more than the word cloud does -- with
+     these reversed the statement was squeezed into 365px while the image took 511. */
+  .rp-split { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 2.25rem; }
+  .rp-split.rp-split--media-right > .rp-split-media { order: 2; }
+}
+.rp-split-media img { margin: 0; width: 100%; height: auto; border-radius: 8px; }
+.rp-split-text > :first-child { margin-top: 0; }
+.rp-split-text > :last-child  { margin-bottom: 0; }
+
+/* (b) "Key areas of interest" as two panels, each with its own bullet list,
+       rather than two long run-on lines. */
+.rp-areas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin: 1.5rem 0 0;
+}
+@media (min-width: 768px) {
+  .rp-areas { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+}
+.rp-area {
+  border: 1px solid var(--color-gray-200, #e5e7eb);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem 1.25rem;
+  background: var(--color-white, #fff);
+}
+.rp-area h4 {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.rp-area ul { margin: 0; padding-left: 1.1rem; }
+.rp-area li { margin: 0.3rem 0; line-height: 1.5; }
+.rp-area .rp-area-ico { color: #BA7517; display: inline-flex; flex-shrink: 0; }
+.rp-area .rp-area-ico svg { height: 1.15em; width: 1.15em; }
+@media (prefers-color-scheme: dark) {
+  .rp-area { border-color: var(--color-gray-700, #374151); background: transparent; }
+}
+
+/* ---------------------------------------------------------------------------
+   VERTICAL RHYTHM
+
+   The theme sets `.hbb-section { padding: 6rem 0 }`, so any two adjacent blocks sat
+   192px apart, and the citation list container added a further `mt-20` (80px) below
+   each group heading. On the research page that produced ~370px between "Browse by
+   topic" and "Under Review", and 104px between a heading and its first paper.
+
+   One knob below. Note the theme's page-level `design.spacing` is NOT a way to fix
+   this: parse_block_v3 only reads the per-BLOCK `design.spacing.padding`, so a
+   page-level `spacing:` value is silently ignored (the home page has carried
+   `spacing: "4rem"` with a "tighter spacing" comment that never did anything).
+   Setting it per block would mean repeating it on every block of every page.
+   --------------------------------------------------------------------------- */
+:root {
+  /* ==> TUNE VERTICAL SPACING HERE. This is the gap above AND below every block, so
+     the space between two blocks is twice this value. 0.5rem gives ~16px between
+     sections; the theme's own default was 6rem, i.e. 192px between blocks. */
+  --site-section-gap: 1.25rem;
+}
+.hbb-section {
+  padding-top: var(--site-section-gap);
+  padding-bottom: var(--site-section-gap);
+}
+
+/* No per-block-type override: every section uses the same padding so the gap
+   between the end of one sub-section and the start of the next is identical
+   everywhere -- panels to statement, statement to the filter, filter to the first
+   group, and the last paper of a group to the next group's heading. */
+
+/* The markdown block always renders its title <div> even when `title: ""`, and that
+   empty div still contributed its mb-6 plus the wrapper's gap-3 -- 20px of phantom
+   space at the top of every untitled block, which is why "panels -> statement" came
+   out 60px against 40px elsewhere. Headings on these pages are written inside the
+   markdown text instead, so zero both. */
+.blox-markdown > div { gap: 0; }
+.blox-markdown > div > div.mb-6 { margin-bottom: 0; }
+
+/* Spacing between publication entries comes from the container's own `space-y-3`
+   (12px). An explicit rule here stacked with it and produced 28px. */
+
+/* Tighten the gap under a block's own heading (the theme uses mb-6 = 24px). */
+.blox-collection .mb-6,
+.blox-topic-filter .mb-6,
+.blox-markdown .mb-6,
+.blox-awards-compact .mb-6 {
+  margin-bottom: 0.5rem;
+}
+
+/* The markdown block's wrapper gap and the prose's first/last margins add up on
+   text-only blocks. */
+.blox-markdown .prose > :first-child { margin-top: 0; }
+.blox-markdown .prose > :last-child { margin-bottom: 0; }
+
+/* ---------------------------------------------------------------------------
+   HOME PAGE
+
+   .hm-cols  - Contact and Faculty Assistant side by side rather than stacked.
+   .hm-wordcloud - puts the word cloud in the hero's right-hand column, aligned
+       under About Me and Interests, instead of centred on the full page width.
+       It mirrors resume-biography-3's own `max-w-7xl` + `md:grid-cols-12` with the
+       content spanning columns 5-12, matching that block's `md:col-span-4` /
+       `md:col-span-8` split, and the 72rem max-width set for the hero above.
+   --------------------------------------------------------------------------- */
+.hm-cols {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem 2rem;
+}
+@media (min-width: 768px) {
+  .hm-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Icon-badged sub-headings for Affiliations / Contact / Faculty Assistant. Mirrors
+   the theme's "About Me" badge (a w-12 circle in bg-primary-100 holding a
+   text-primary-600 icon) at a scale suited to an h4, so these read as section
+   markers rather than plain bold text. */
+/* Matches the theme's own Interests heading exactly -- `text-xl font-bold
+   tracking-tight` with a w-12 badge holding a w-6 icon -- so Affiliations, Contact,
+   Faculty Assistant and Interests all read at the same weight. */
+.hm-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;                  /* gap-4, as the theme's heading rows use */
+  margin: 2rem 0 0.75rem;
+  font-size: 1.25rem;         /* text-xl */
+  font-weight: 700;           /* font-bold */
+  letter-spacing: -0.025em;   /* tracking-tight */
+  line-height: 1.4;
+}
+.hm-head-ico {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  background: var(--color-primary-100, #e0e7ff);
+  color: var(--color-primary-600, #4f46e5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.hm-head-ico svg { height: 1.5rem !important; width: 1.5rem; }
+.hm-head-ico > span { padding: 0 !important; display: inline-flex; }
+@media (prefers-color-scheme: dark) {
+  .hm-head-ico {
+    background: var(--color-primary-900, #312e81);
+    color: var(--color-primary-400, #818cf8);
+  }
+}
+
+/* Word cloud sits immediately under Interests. Three separate sources of space had
+   to go: this block's section padding, the paragraph margin around the image, and --
+   the big one at 128px -- the hero's own inner padding, which the theme ramps up
+   responsively (`py-8 sm:py-12 md:py-16 lg:py-24 xl:py-32`). */
+.blox-markdown:has(.hm-wordcloud) { padding-top: 0 !important; }
+.hm-wordcloud { margin-top: 0; }
+/* Hugo's image render hook wraps the image in a <figure>, whose prose margin-top
+   (40px) was the whole remaining gap under Interests. */
+.hm-wordcloud p:first-child,
+.hm-wordcloud > div > p:first-child,
+.hm-wordcloud > div > figure:first-child,
+.hm-wordcloud figure { margin-top: 0; }
+.blox-resume-biography-3 .resume-biography {
+  /* The theme ramps this up responsively to `xl:py-32` (128px). Trimmed at both ends:
+     the top so the avatar and bio sit higher, the bottom so the word cloud follows
+     close under Interests. */
+  padding-top: 2.5rem;
+  padding-bottom: 0;
+}
+
+/* The markdown block wraps its content in `max-w-prose mx-auto` + `items-center`,
+   which caps and centres anything inside -- so .hm-wordcloud could not reach the
+   hero's column geometry. Release those two constraints for the block that holds it. */
+.blox-markdown:has(.hm-wordcloud) .max-w-prose,
+.blox-markdown:has(.hm-wordcloud) .prose {
+  max-width: none;
+}
+.blox-markdown:has(.hm-wordcloud) > div {
+  align-items: stretch;
+}
+.hm-wordcloud > div > :first-child { margin-top: 0; }
+.hm-wordcloud img { margin: 0 0 0 auto; }   /* right-aligned within its column */
+@media (min-width: 768px) {
+  .hm-wordcloud {
+    max-width: 72rem;
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 2rem;   /* matches the hero grid's md:gap-8, so columns line up exactly */
+  }
+  .hm-wordcloud > div { grid-column: 5 / -1; }
+}
+
+/* ---------------------------------------------------------------------------
+   HOME PAGE: horizontal position and vertical rhythm
+
+   ==> TUNE THESE TWO:
+       --home-left-inset : how far the hero content sits from the left edge.
+                           The theme centres it (`mx-auto`), which left a large
+                           and uneven-looking margin; this pulls it leftward.
+                           Larger value = further right. `auto` restores centring.
+       --home-block-gap  : the single gap used between About Me, Affiliations,
+                           Contact / Faculty Assistant, and Interests, so those
+                           four are evenly spaced rather than each relying on a
+                           different theme utility (mb-8 / mb-12 / mb-16).
+   --------------------------------------------------------------------------- */
+:root {
+  --home-left-inset: 5rem;
+  --home-block-gap: 2.5rem;
+}
+
+@media (min-width: 1024px) {
+  /* Shift the hero grid left. The word cloud block below uses the same inset so it
+     stays aligned with the hero's right-hand column. */
+  .blox-resume-biography-3 .max-w-7xl {
+    margin-left: var(--home-left-inset);
+    margin-right: auto;
+  }
+  .hm-wordcloud {
+    /* 0.5rem less than the hero's inset: the markdown block wrapping this has px-6
+       (24px) while the hero section has px-4 (16px), so matching the raw inset left
+       the word cloud 8px right of the hero's column. */
+    margin-left: calc(var(--home-left-inset) - 0.5rem);
+    margin-right: auto;
+  }
+}
+
+/* Even spacing above each of the badged sub-headings ... */
+.hm-head {
+  margin-top: var(--home-block-gap);
+}
+/* ... and the same gap between the last of them and Interests. `mb-12` is the
+   theme's bio wrapper, the only element carrying that class in this block. */
+.blox-resume-biography-3 .mb-12 {
+  margin-bottom: var(--home-block-gap);
+}
+
+/* Zero the margins that would otherwise ADD to --home-block-gap instead of
+   collapsing into it, so the four gaps come out equal. Measured before this: 40px
+   after the About Me paragraph, but 64px after the Affiliations list (its own 24px
+   bottom margin plus the 40px) and 50px before Interests. */
+.blox-resume-biography-3 .bio-text ul { margin-bottom: 0; }
+.blox-resume-biography-3 .bio-text ul > li:last-child { margin-bottom: 0; }
+.hm-cols > div > :last-child { margin-bottom: 0; }
+.hm-cols > div > .hm-head:first-child { margin-top: var(--home-block-gap); }
+
+/* ---------------------------------------------------------------------------
+   Wider gutter between the hero's two columns.
+
+   ==> TUNE --home-col-gap. The word cloud block mirrors the hero's 12-column grid,
+   so it reads the same variable -- change one and they stay aligned.
+
+   Gated at xl (1280px), NOT md, and that gate is load-bearing. `column-gap` on a
+   `grid-cols-12` container applies to all ELEVEN gutters, so a 6rem gap demands
+   11 x 96 = 1056px of the grid's width before a single column gets any. Add the
+   80px --home-left-inset and the wrapper's 16px padding and the hero cannot fit
+   below roughly 1170px of viewport -- so at md it forced a 1152px-wide layout into
+   a 1024px window and the whole home page scrolled sideways. The give-away when
+   diagnosing this: `md:col-span-4` measured exactly 3 gutters wide (288px) and
+   `md:col-span-8` exactly 7 (672px), i.e. the columns themselves had collapsed to
+   nothing and the gaps were setting the geometry.
+
+   Below xl the grid falls back to the theme's own `md:gap-8` (32px), whose eleven
+   gutters need only 352px and therefore always fit. Nothing changes at the widths
+   this layout was tuned at.
+   --------------------------------------------------------------------------- */
+:root {
+  --home-col-gap: 6rem;
+}
+@media (min-width: 1280px) {
+  .blox-resume-biography-3 .max-w-7xl > .grid { column-gap: var(--home-col-gap); }
+  .hm-wordcloud { gap: var(--home-col-gap); }
+}
+
+/* Caption sits closer to the figure. Three things separated them: the figure's own
+   prose margin-bottom, and two EMPTY <p> elements that goldmark emits from the blank
+   lines required around raw HTML in markdown. */
+.hm-wordcloud p:empty { display: none; }
+.hm-wordcloud figure { margin-bottom: 0; }
+.hm-wordcloud figure ~ p { margin-top: 0.35rem; }
+
+/* ---------------------------------------------------------------------------
+   SITE-WIDE LEFT ALIGNMENT
+
+   The theme centres every content block (`mx-auto` plus `items-center`). The owner
+   wants the home page's left-aligned treatment across the site, so text starts at
+   the same x on every page rather than floating in the middle.
+
+   ==> TUNE --site-left-inset. `auto` restores the theme's centred layout.
+
+   Only applied at lg and up: on narrower screens the content already fills the
+   width and centring is the correct behaviour.
+   --------------------------------------------------------------------------- */
+:root {
+  /* 6rem puts content at 96px, matching both the home hero (--home-left-inset 5rem
+     plus the section's 16px padding) and the ~92px gap below the navbar's rule, so
+     the top-left corner reads as balanced. */
+  --site-left-inset: 6rem;
+}
+@media (min-width: 1024px) {
+  /* Inset the OUTER wrapper of each block only, and zero its horizontal padding, so
+     every page's content starts at exactly --site-left-inset. Applying the inset to
+     both a wrapper and the prose inside it double-counts: /students/ came out at
+     152px instead of 80px. */
+  .blox-markdown:not(:has(.hm-wordcloud)) > div.max-w-prose,
+  .blox-collection > div.max-w-prose,
+  .blox-collection > div.items-center,
+  .blox-topic-filter > div.max-w-prose,
+  .blox-awards-compact > div.max-w-prose,
+  .blox-awards-compact > div.items-center {
+    margin-left: var(--site-left-inset);
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  /* Nested containers ride on the inset wrapper rather than adding to it. */
+  .blox-markdown .prose.max-w-prose,
+  .blox-collection .container.max-w-3xl,
+  .blox-awards-compact .container.max-w-3xl {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .tf-wrap {
+    margin-left: var(--site-left-inset);
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* The wrappers are flex columns with `items-center`, which would keep headings and
+     lists optically centred even once the wrapper itself is left-aligned. */
+  .blox-markdown > div.items-center,
+  .blox-collection > div.items-center,
+  .blox-topic-filter > div.items-center,
+  .blox-awards-compact > div.items-center {
+    align-items: flex-start;
+  }
+  /* Chips stay centred over the column of papers they filter -- as a horizontal
+     row of pills they read better centred than ragged-left. */
+  .tf-chips { justify-content: center; }
+  .tf-bar { justify-content: center; }
+
+  /* /bio/ -- constrain the whole block to the text column, then let the theme's own
+     centring apply INSIDE it. Left-aligning the avatar, name and social icons (an
+     earlier attempt) looked wrong: they belong centred over the paragraph beneath. */
+  .blox-resume-biography .resume-biography {
+    max-width: var(--site-content-max);
+    margin-left: var(--site-left-inset);
+    margin-right: auto;
+  }
+
+}
+
+/* ---------------------------------------------------------------------------
+   LINKS: colour rather than underline
+
+   The theme underlines links in prose, and the citation view added an explicit
+   `underline` class to every paper title. Underlines on a page that is largely a list of
+   linked titles turn into visual noise, so clickability is signalled by colour.
+   Hover deepens the colour rather than adding a rule back.
+
+   The attachment buttons (PDF, DOI, Online companion, the Summary toggle) are left
+   alone -- they are already styled as buttons by the theme.
+   --------------------------------------------------------------------------- */
+.page-body a,
+.page-body a.underline,
+.page-body .prose a,
+.page-body .underline {
+  text-decoration: none;
+}
+.page-body .prose a,
+.page-body .bio-text a,
+.page-body .pub-list-item a:not(.hb-attachment-link),
+.page-body .rp-area a,
+.page-body .hm-cols a,
+.page-body .hb-inline-summary-body a {
+  color: var(--color-primary-600, #4f46e5);
+  font-weight: 500;
+}
+.page-body .prose a:hover,
+.page-body .bio-text a:hover,
+.page-body .pub-list-item a:not(.hb-attachment-link):hover,
+.page-body .rp-area a:hover,
+.page-body .hm-cols a:hover,
+.page-body .hb-inline-summary-body a:hover {
+  color: var(--color-primary-800, #3730a3);
+}
+@media (prefers-color-scheme: dark) {
+  .page-body .prose a,
+  .page-body .bio-text a,
+  .page-body .pub-list-item a:not(.hb-attachment-link),
+  .page-body .rp-area a,
+  .page-body .hm-cols a,
+  .page-body .hb-inline-summary-body a {
+    color: var(--color-primary-400, #818cf8);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Icon optically centred in its badge.
+
+   The theme's `icon` shortcode applies `transform: translateY(0.1em)`, which is
+   right for an icon sitting inline with text but pushes it 2px below centre inside
+   a circular badge.
+   --------------------------------------------------------------------------- */
+.hm-head-ico svg { transform: none !important; }
+
+/* ---------------------------------------------------------------------------
+   Top margin equals the left margin -- OPTICALLY, not arithmetically.
+
+   Measured from the navbar's bottom rule, which is where the page visually starts.
+   The first section sits flush against that rule, so its top padding IS the gap.
+
+   Setting that padding to --site-left-inset makes the two gaps *measure* equal
+   (both 96px) but they do not *look* equal, and the eye is right. The left margin
+   ends at the glyph's left edge, but a text element's top box edge is not its glyph
+   top: above the cap height sit the half-leading and the font's ascender gap. That
+   invisible band is what makes 96px of padding read as ~109px of white.
+
+   ==> TUNE --site-top-optical-trim: larger raises the content, smaller lowers it.
+   0.8rem (12.8px) is not a guess -- it is that band, which measures ~12.9px on all
+   three pages even though they lead with different elements (/research/ an h3 at
+   30px/40px: 5.0 + 7.9; /students/ and /teaching/ a p at 20px/36px: 8.0 + 4.9).
+   The two font sizes happening to cancel to the same number is why one variable
+   covers all three; re-derive it if the leading element's type or size changes.
+
+   Excludes the two biography blocks: the home hero and /bio/ have their own
+   (separately tuned) internal padding.
+   --------------------------------------------------------------------------- */
+:root {
+  --site-top-optical-trim: 0.8rem;
+}
+@media (min-width: 1024px) {
+  .page-body > section.hbb-section:first-child:not(.blox-resume-biography-3):not(.blox-resume-biography) {
+    padding-top: calc(var(--site-left-inset) - var(--site-top-optical-trim));
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   PUBLICATION / ARTICLE PAGES: the same left alignment as every other page.
+
+   `single.html` is a completely different layout from the blocks pages, so the
+   site-wide left-inset rules above do not reach it. It centres a `max-w-screen-xl`
+   flex row holding [sidebar spacer | article | TOC], then centres `main` inside
+   that row again. At 1440px the result was a paper title starting at x=377 while
+   every other page starts its content at 96px.
+
+   Four things have to give way:
+
+   1. The 256px sidebar column. On this layout the sidebar partial is called with
+      `no_sidebar: true`, so the <aside> holds nothing but an `h-0 w-64` spacer
+      whose only job is to counterbalance the TOC -- and we already collapse that
+      TOC when it has no links (see the `nav.hb-toc` rule above), leaving the
+      spacer shoving the article 256px right with nothing to balance.
+      Note that its `lg:hidden` class is a red herring: the theme's own
+      `components/sidebar-left.css` sets `.hb-sidebar-container { @apply flex ...
+      lg:w-64 }` unconditionally and later in the cascade, so the aside is a
+      256px flex column at every width from lg up, not just at xl. Hence lg here
+      rather than xl. Matching on `.h-0.w-64` targets the no-sidebar spacer
+      specifically, so a real docs sidebar (actual links, no spacer) is
+      unaffected -- and below lg this same <aside> is the mobile nav drawer, which
+      the media query leaves alone.
+   2. The row's `mx-auto`.
+   3. `main`'s `justify-center` and its symmetric `md:px-12`, replaced by one
+      left inset.
+   4. `container mx-auto` on the page footer (share buttons, author card, prev/next),
+      which centres that group inside `main` and so sat ~74px right of everything
+      above it -- a misalignment visible within the page itself, not just against
+      other pages.
+
+   Vertical: `main`'s own padding replaces the stack of `my-10` + `pt-4` + `mt-2`
+   that produced an arbitrary 64px, so the gap is expressed with the same two
+   variables as the blocks pages. The h1 here is 36px/40px rather than 30px/40px,
+   so its invisible leading band is ~11.4px against the ~12.9px of --site-top-
+   optical-trim; reusing the one variable lands the visible title top within ~1.5px
+   of 96px, which is not worth a second knob.
+   --------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .page-body aside.hb-sidebar-container:has(> .hb-scrollbar > .h-0.w-64) {
+    display: none;
+  }
+  .page-body > div.flex.max-w-screen-xl {
+    max-width: min(100%, calc(var(--site-left-inset) + var(--site-content-max)));
+    margin-left: 0;
+    margin-right: auto;
+  }
+  .page-body > div.flex.max-w-screen-xl > article {
+    justify-content: flex-start;
+  }
+  .page-body > div.flex.max-w-screen-xl > article > main {
+    max-width: 100%;
+    padding-left: var(--site-left-inset);
+    padding-right: 0;
+    padding-top: calc(var(--site-left-inset) - var(--site-top-optical-trim));
+  }
+  /* Neutralise the two other contributors to the top gap so the padding above is
+     the whole story rather than one term in a hidden sum. */
+  .page-body:has(> div.flex.max-w-screen-xl) {
+    margin-top: 0;
+  }
+  .page-body > div.flex.max-w-screen-xl > article > main > h1 {
+    margin-top: 0;
+  }
+  .page-body > div.flex.max-w-screen-xl > article > main > div.container.mx-auto {
+    margin-left: 0;
+    margin-right: auto;
+  }
+  /* The body prose and that footer group are both capped at the theme's 65ch
+     (812px) while the metadata grid above them runs to --site-content-max, so
+     their right edges disagreed by ~148px and the footer's rule stopped short of
+     the column. Use the same measure the markdown blocks already use. */
+  .page-body > div.flex.max-w-screen-xl > article > main > div.prose,
+  .page-body > div.flex.max-w-screen-xl > article > main > div.container.mx-auto {
+    max-width: var(--site-content-max);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   TAXONOMY AND SECTION LIST PAGES: the same left alignment again.
+
+   A third layout, distinct from both the blocks pages and `single.html`: one or more
+   centred `max-w-prose mx-auto` wrappers, sometimes followed by a
+   `flex flex-col items-center` body. It backs the topic pages (`/topics/<name>/`,
+   one click away from every paper via its Topics line), the `/topics/` index and the
+   `/publications/` section list -- so a visitor moving research -> paper -> topic
+   would otherwise see the content jump left and right at each step.
+
+   Match on `div.max-w-prose.mx-auto` without the flex/justify part: the header row is
+   `flex justify-center` on a term page but `flex justify-start` on the terms index,
+   and the terms index adds a second, non-flex `my-5` wrapper for the chips. Only the
+   first wrapper carries the top gap.
+
+   Same treatment as above: unpick the centring mechanisms (`mx-auto` on the
+   wrappers, `items-center` on the body), then inset everything to --site-left-inset
+   and cap it at --site-content-max so left and right edges match every other page.
+   --------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .page-body:has(> div.max-w-prose.mx-auto) {
+    margin-top: 0;
+  }
+  .page-body > div.max-w-prose.mx-auto {
+    /* min() with 100% keeps the wrapper from overflowing at exactly 1024px, where
+       the inset plus the content measure (1056px) is wider than the viewport. */
+    max-width: min(100%, calc(var(--site-left-inset) + var(--site-content-max)));
+    margin-left: 0;
+    margin-right: auto;
+    justify-content: flex-start;
+    padding-left: var(--site-left-inset);
+  }
+  .page-body > div.max-w-prose.mx-auto:first-child {
+    padding-top: calc(var(--site-left-inset) - var(--site-top-optical-trim));
+  }
+  .page-body > div.flex.flex-col.items-center {
+    align-items: flex-start;
+  }
+  .page-body > div.flex.flex-col.items-center > div.container {
+    /* Subtracting the inset from 100% is what keeps this from overflowing at
+       exactly 1024px, where inset + measure (1056px) exceeds the viewport. */
+    max-width: min(var(--site-content-max), calc(100% - var(--site-left-inset)));
+    margin-left: var(--site-left-inset);
+    margin-right: auto;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Navbar aligned with page content.
+
+   The navbar spanned the full viewport with only 12px of padding, so with the page
+   content left-inset and capped, the brand sat far left of the content's left edge
+   and the search/theme icons far right of its right edge. Constraining the navbar to
+   the same column makes both edges line up, and the menu shifts left as a result.
+   --------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+  .header .navbar {
+    max-width: calc(var(--site-left-inset) + var(--site-content-max));
+    margin-right: auto;
+    padding-left: var(--site-left-inset);
+    padding-right: 0;
+    /* Overrides the theme's `space-between`, which parked the menu in the middle of
+       the bar. With it removed, the auto margin below does the positioning. */
+    justify-content: flex-start;
+  }
+
+  /* Push the whole right-hand cluster to the RIGHT text margin.
+
+     The search and dark-mode buttons stay last, and they are what lines up with the
+     content column's right edge -- the navbar's `padding-right: 0` above already
+     puts them there. `margin-left: auto` on the menu then closes the gap, so the
+     menu sits immediately to their left instead of floating mid-bar.
+
+     `margin-right` gives the menu a little air so "CV" is not touching the search
+     glyph. It is deliberately a fixed value rather than a second auto margin: with
+     two auto margins the free space would be split and the cluster would drift back
+     toward the middle.
+
+     Scoped to lg and up. Below that the <ul> is the collapsed mobile drawer, so
+     right-aligning it there would misplace the drawer. */
+  .header .navbar > ul.navbar-nav {
+    margin-left: auto;
+    margin-right: 1rem;
+  }
+}

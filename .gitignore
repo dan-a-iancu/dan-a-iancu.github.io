@@ -1,0 +1,126 @@
+# ============================================================================
+# Hugo Site .gitignore
+# ============================================================================
+
+# ============================================================================
+# Hugo Build Artifacts
+# ============================================================================
+
+# Generated site output
+public/
+
+# Hugo resources (processed assets)
+resources/
+
+# Hugo build lock
+.hugo_build.lock
+
+# Hugo stats
+hugo_stats.json
+
+# Auto-generated JS config
+**/assets/jsconfig.json
+
+# ============================================================================
+# Node.js & Package Managers
+# ============================================================================
+
+# Dependencies
+node_modules/
+
+# ============================================================================
+# Environment & Configuration
+# ============================================================================
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# ============================================================================
+# Development Tools
+# ============================================================================
+
+# IDE & Editors
+# Ignore local VS Code state but keep the three shareable files: recommended
+# extensions, repo-specific editor settings (YAML indentation matters here), and
+# the dev-server task.
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+.idea/
+
+# ============================================================================
+# Generated Content
+# ============================================================================
+
+# Pagefind search index
+pagefind/
+static/pagefind/
+
+# ============================================================================
+# Operating System
+# ============================================================================
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ============================================================================
+# Logs & Temporary Files
+# ============================================================================
+
+*.log
+npm-debug.log*
+test
+
+# ============================================================================
+# Vendored theme reference clone (NOT wired into the build)
+# ============================================================================
+# themes/hugo-blox-builder is a full upstream git clone kept as read-only
+# reference only. The build resolves the theme from the Go module cache at the
+# version pinned in go.sum, NOT from here. Left untracked but unignored, it
+# makes `git add -A` create a broken gitlink.
+themes/
+
+# Publication generator staging area (scripts/gen_publications.py output).
+# Regenerable; only content/publications/ is tracked.
+build/
+
+# ============================================================================
+# Agent and process docs -- kept on disk, deliberately NOT published
+# ============================================================================
+# The site repository is public. These files are the working notes for the
+# Claude Code / ChatGPT handoff and the owner's own process docs; they are not
+# part of the website and were untracked on 2026-09-06 at the owner's request.
+# They still live in this folder (and therefore in Dropbox) -- they are simply
+# not committed. A fresh clone will NOT have them.
+AGENTS.md
+CLAUDE.md
+MIGRATION.md
+EDITING.md
+DEPLOY.md
+docs/
+.claude/
+
+# ============================================================================
+# Raw teaching evaluation reports -- must never be committed
+# ============================================================================
+# The institutional reports contain verbatim student comments, including a
+# section explicitly designated for the instructor only. The public site
+# publishes hand-written quantitative summaries instead, at
+# /teaching/evaluations/. The originals are retained outside this repository in
+# current-website-jemdoc/Teaching/. This rule is here so that dropping the PDFs
+# back into the bundle cannot silently re-commit them; `build.publishResources:
+# false` in content/teaching/_index.md is the second line of defence, keeping
+# them out of the generated site even if they are present on disk.
+content/teaching/ratings/

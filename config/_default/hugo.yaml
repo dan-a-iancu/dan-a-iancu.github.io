@@ -1,0 +1,75 @@
+# Configuration of Hugo
+# Guide: https://docs.hugoblox.com/tutorial/
+# Hugo Documentation: https://gohugo.io/getting-started/configuration/#all-configuration-settings
+# This file is formatted using YAML syntax - learn more at https://learnxinyminutes.com/docs/yaml/
+
+# Website name
+title: Dan A. Iancu
+# Website URL
+baseURL: 'https://dan-a-iancu.github.io/'
+
+############################
+## LANGUAGE
+############################
+
+defaultContentLanguage: en
+hasCJKLanguage: false
+defaultContentLanguageInSubdir: false
+removePathAccents: true
+
+############################
+## ADVANCED
+############################
+
+build:
+  writeStats: true
+enableGitInfo: false
+summaryLength: 30
+pagination:
+  # High enough that taxonomy term pages list every paper on one page. At the
+  # default of 10, /topics/optimization/ silently showed only 10 of its 19.
+  pagerSize: 200
+enableEmoji: true
+enableRobotsTXT: true
+footnotereturnlinkcontents: <sup>^</sup>
+ignoreFiles: [\.ipynb$, .ipynb_checkpoints$, \.Rmd$, \.Rmarkdown$, _cache$]
+disableAliases: true
+outputs:
+  home: [HTML, RSS, backlinks]
+  section: [HTML, RSS]
+imaging:
+  resampleFilter: Hermite
+  quality: 90
+  anchor: Smart
+  hint: picture
+timeout: "600s"
+taxonomies:
+  author: authors
+  tag: tags
+  publication_type: publication_types
+  # Research themes, assigned in data/paper-topics.yaml and written into each
+  # publication's `topics:` front matter by scripts/gen_publications.py. A separate
+  # taxonomy rather than reusing `tags`, so topic pages get clean /topics/ URLs and
+  # cannot collide with tags used elsewhere.
+  topic: topics
+markup:
+  _merge: deep
+  highlight:
+    lineNos: false
+security:
+  _merge: deep
+  exec:
+    # Hugo's default exec allow-list no longer includes `tailwindcss` (it did at
+    # the version blox-tailwind v0.9.0 targets), so `css.TailwindCSS` in the
+    # theme's _partials/css.html is blocked without this. Mirrors Hugo's own
+    # defaults plus the one addition; harmless on older Hugo versions.
+    allow:
+      - '^(dart-)?sass$'
+      - '^go$'
+      - '^git$'
+      - '^node$'
+      - '^npx$'
+      - '^postcss$'
+      - '^tailwindcss$'
+sitemap:
+  _merge: deep

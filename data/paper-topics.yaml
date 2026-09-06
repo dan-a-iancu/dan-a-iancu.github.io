@@ -1,0 +1,127 @@
+# Paper topics
+#
+# EDIT THIS FILE to change how papers are grouped by theme on /research/.
+# Consumed by scripts/gen_publications.py, which writes each paper's `topics:`
+# front matter. After editing, run:
+#     python3 scripts/gen_publications.py && sh scripts/promote_publications.sh
+#
+# Each topic has:
+#   name  - the short label shown as a tag, a filter chip and in the URL.
+#           Avoid '&': Hugo drops it when building the URL, leaving a double dash.
+#   scope - what the topic covers; shown as the description on its topic page
+# A paper may carry any number of codes, including none.
+
+topics:
+  opt:
+    name:  Optimization
+    scope: 'Optimization under uncertainty, Data-driven optimization'   # 19 papers
+  sustain:
+    name:  Responsible Operations
+    scope: 'Responsible & sustainable operations'   # 13 papers
+  chains:
+    name:  Supply Chains
+    scope: 'Global supply chains'   # 10 papers
+  finance:
+    name:  Operations and Finance
+    scope: 'Operations & finance, FinTech'   # 9 papers
+  fair:
+    name:  Fairness in AI
+    scope: 'Fairness in analytics & AI'   # 4 papers
+  health:
+    name:  Healthcare and Policy
+    scope: 'Healthcare & public policy'   # 4 papers
+  energy:
+    name:  Energy and Climate
+    scope: 'Energy & climate'   # 4 papers
+  retail:
+    name:  Retail and Pricing
+    scope: 'Retail & pricing'   # 4 papers
+papers:
+
+  # ---------- Under Review (5) ----------
+  # 2026  Child Labor as an Operational Lever: Heterogeneous Effects of Interventions in Coco...
+  child-labor-operational-lever: [sustain, chains]
+  # 2025  Area Conditions and Positive Incentives: Engaging Local Communities to Protect Forests
+  area-conditions-positive-incentives: [sustain, fair]
+  # 2025  Optimality of Linear Policies in Distributionally Robust Linear Quadratic Control
+  optimality-linear-policies-drlq-control: [opt]
+  # 2025  Optimized Targeted Confinements for Future Pandemic Response
+  optimized-targeted-confinements-pandemic: [health, opt]
+  # 2025  Stable and Profitable Trading Platforms for Smallholder Commodity Supply Chains
+  stable-profitable-trading-platforms: [sustain, chains, opt]
+
+  # ---------- Journal Publications (17) ----------
+  # 2026  Boosting Sales and Customer Welfare from Premade Foods (Let the Freshest Chicken Fl...
+  boosting-sales-premade-foods: [retail, sustain]
+  # 2024  Climate impacts of digital use supply chains
+  climate-impacts-digital-use-supply-chains: [energy, chains]
+  # 2021  Value Loss in Allocation Systems with Provider Guarantees
+  value-loss-allocation-systems-provider-guarantees: [fair, opt]
+  # 2021  Monitoring with Limited Information
+  monitoring-with-limited-information: [finance, health, opt]
+  # 2020  Loyalty Program Liabilities and Point Values
+  loyalty-program-liabilities-and-point-values: [finance, retail]
+  # 2019  Designing Contracts and Sourcing Channels to Create Shared Value
+  designing-contracts-sourcing-channels-shared-value: [sustain, chains]
+  # 2018  Dynamic Pricing Under Debt: Spiraling Distortions and Efficiency Losses
+  dynamic-pricing-under-debt: [finance, retail]
+  # 2018  Dynamic Learning of Patient Response Types: An Application to Treating Chronic Dise...
+  dynamic-learning-patient-response-types: [health, opt]
+  # 2017  Disruption Risk and Optimal Sourcing in Multitier Supply Networks
+  disruption-risk-optimal-sourcing-multitier: [chains]
+  # 2017  Is Operating Flexibility Harmful Under Debt?
+  is-operating-flexibility-harmful-under-debt: [finance, retail]
+  # 2015  Tight Approximations of Dynamic Risk Measures
+  tight-approximations-dynamic-risk-measures: [opt, finance]
+  # 2014  Pareto Efficiency in Robust Optimization
+  pareto-efficiency-in-robust-optimization: [opt]
+  # 2014  Fairness and Efficiency in Multiportfolio Optimization
+  fairness-efficiency-multiportfolio-optimization: [finance, fair, opt]
+  # 2013  Supermodularity and Affine Policies in Dynamic Robust Optimization
+  supermodularity-affine-policies-dynamic-robust: [opt]
+  # 2013  A New Local Search Algorithm for Binary Optimization
+  new-local-search-algorithm-binary-optimization: [opt]
+  # 2011  A Hierarchy of Near-Optimal Policies for Multistage Adaptive Optimization
+  hierarchy-near-optimal-policies-multistage-adaptive: [opt]
+  # 2010  Optimality of Affine Policies in Multistage Robust Optimization
+  optimality-affine-policies-multistage-robust: [opt]
+
+  # ---------- Other Publications (2) ----------
+  # 2024  Financial Access or Price Premiums? A Nuanced View into Improving Farmer Welfare an...
+  financial-access-or-price-premiums: [sustain, finance, chains]
+  # 2015  Robust Multi-stage Decision Making
+  robust-multistage-decision-making: [opt]
+
+  # ---------- Peer-Reviewed Conference Papers (4) ----------
+  # 2025  Optimality of Linear Policies in Distributionally Robust Linear Quadratic Control
+  linear-policies-drlq-control-neurips-2025: [opt]
+  # 2023  Distributionally Robust Linear Quadratic Control
+  distributionally-robust-lq-control-neurips-2023: [opt]
+  # 2011  Power Generation Management Under Time-Varying Power and Demand Conditions
+  power-generation-management-time-varying: [energy, opt]
+  # 2009  Optimality of Affine Policies in Multi-stage Robust Optimization
+  affine-policies-multistage-robust-cdc-2009: [opt]
+
+  # ---------- Working Papers and Active Research (8) ----------
+  # 2025  Payments for Ecosystem Services: Balancing Upfront and Ex-Post Payments to Overcome...
+  payments-for-ecosystem-services: [sustain, finance]
+  # 2025  Dynamic Incentives for Improving Smallholder Welfare and Protecting Forests
+  dynamic-incentives-smallholder-welfare: [sustain, chains]
+  # 2025  Identifying Forced Labor in the Construction and Food Industries
+  identifying-forced-labor: [sustain, chains]
+  # 2025  AI Solutions for Incentivizing Sustainable Protein Choices in Diets
+  ai-solutions-sustainable-protein-choices: [sustain, fair]
+  # 2025  Nurse Staffing with Strategic Labor Pools
+  nurse-staffing-strategic-labor-pools: [health]
+  # 2025  Supply Chain Intermediation for Clean Cooking Solutions
+  supply-chain-intermediation-clean-cooking: [energy, sustain, chains]
+  # 2025  Inventory for Impact: Scalable Inventory Routing for Clean Cooking Access in Develo...
+  inventory-for-impact-clean-cooking: [energy, sustain, chains]
+  # 2025  The Price of Funding Inflexibility in Humanitarian Operations
+  price-of-funding-inflexibility: [sustain, finance]
+
+  # ---------- Theses (2) ----------
+  # 2010  Adaptive Robust Optimization with Applications in Inventory and Revenue Management
+  phd-thesis-adaptive-robust-optimization: [opt]
+  # 2004  Geometric Approach to Digital Quantum Information. Quantum Entanglement
+  bs-thesis-geometric-quantum-information: []

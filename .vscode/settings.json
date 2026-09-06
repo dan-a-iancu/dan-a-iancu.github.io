@@ -1,0 +1,53 @@
+{
+  // Content pages here are almost entirely YAML front matter, and a TAB is invalid
+  // YAML. Force spaces so a stray tab can never break a page.
+  "editor.insertSpaces": true,
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  "[yaml]": { "editor.tabSize": 2, "editor.autoIndent": "keep" },
+  "[markdown]": {
+    "editor.tabSize": 2,
+    // Markdown files here are Hugo landing pages whose body is YAML. A markdown
+    // formatter will happily reindent that and break the build.
+    "editor.formatOnSave": false,
+    "editor.wordWrap": "on"
+  },
+
+  // Keep search usable. themes/ is a full upstream clone (thousands of files) and
+  // public/, resources/ and build/ are all generated -- without this, every search
+  // is buried in results from files you must not edit.
+  "search.exclude": {
+    "**/themes": true,
+    "**/public": true,
+    "**/resources": true,
+    "**/build": true,
+    "**/node_modules": true,
+    "**/hugo_stats.json": true
+  },
+  "files.watcherExclude": {
+    "**/themes/**": true,
+    "**/public/**": true,
+    "**/resources/**": true
+  },
+
+  // Domain vocabulary, so the spell checker flags real typos rather than every
+  // coauthor and journal name.
+  "cSpell.words": [
+    "Ashlagi", "Bertsimas", "Besbes", "Bimpikis", "Brandeau", "Breugem", "Calmon",
+    "Camelo", "Ciocan", "daniancu", "Gernert", "Gulserliler", "Gürserliler", "Iancu",
+    "Jatusripitak", "Karaduman", "Kocyigit", "Koçyiğit", "Manea", "Negoescu",
+    "Parrilo", "Plambeck", "Skillicorn", "Squillante", "Suzdaltsev", "Taskesen",
+    "Taşkesen", "Tiryaki", "Trichakis", "Tsoukalas", "Vaidya", "Vizzoto", "Warnes",
+    "Wassenhove", "Zegher", "Zhuoyang", "Zoumpoulis",
+    "INFORMS", "MSOM", "POMS", "INSEAD", "ICME", "EIPER", "Pierskalla", "Nicholson",
+    "TutORials", "Srivani", "Peiros", "Goldstine", "Politehnica",
+    "HugoBlox", "hugoblox", "jemdoc", "goldmark", "Pagefind", "pagefind", "blox",
+    "smallholder", "smallholders", "Multiportfolio", "multiportfolio", "FinTech",
+    "premade", "iFORM", "Wasserstein", "supermodular", "Supermodularity",
+    "submodular", "sublattice", "sublattices", "LQG", "arXiv", "Crossref"
+  ],
+  "cSpell.ignorePaths": ["themes/**", "public/**", "build/**", "*.bib"]
+}

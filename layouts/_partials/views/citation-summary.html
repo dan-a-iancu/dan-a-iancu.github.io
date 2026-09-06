@@ -1,0 +1,80 @@
+{{/* Citation view + award line + an inline, expandable Summary disclosure.
+
+     The stock `citation` view, plus an award line and a "Summary" toggle alongside the
+     PDF / Online companion buttons which expands the paper's summary in place, so
+     the list can be skimmed without clicking through to each paper.
+
+     Uses a native <details>/<summary> rather than JavaScript: it is keyboard
+     accessible and screen-reader friendly for free, works with JS disabled, and
+     needs no state management. The links row is inline-flex and the <details> is
+     display:inline so the toggle sits on the same line as the buttons, while the
+     panel itself is a block and so wraps to full width underneath.
+
+     The summary text comes from the `abstract` front-matter field, which we use for
+     a plain-language summary (see i18n/en.yaml, where that label is renamed). */}}
+{{ $item := .item }}
+{{ $has_attachments := partial "functions/has_attachments" $item }}
+
+{{ $topics := slice }}
+{{ range $item.GetTerms "topics" }}{{ $topics = $topics | append (lower .LinkTitle) }}{{ end }}
+
+{{/* No inline margin-bottom: it applied to the LAST item too, so the gap from a
+     group's final paper to the next group's heading came out 16px larger than every
+     other inter-section gap. Item spacing comes from the container instead. */}}
+<div class="pub-list-item view-citation"
+     data-topics="{{ delimit $topics "|" }}">
+  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
+
+  <span class="article-metadata li-cite-author">
+    {{ partial "page_metadata_authors" $item }}
+  </span>
+  ({{- $item.Date.Format "2006" -}}).
+  <a href="{{ $item.RelPermalink }}" class="underline">{{ $item.Title }}</a>.
+  {{ with $item.Params.publication }}{{ . | markdownify }}.{{ end }}
+
+  {{ with $item.Params.awards }}
+    {{ range . }}
+      <div class="mt-1 text-sm text-amber-700 dark:text-amber-500 flex items-start gap-1.5">
+        <span aria-hidden="true">&#127942;</span>
+        <span>
+          {{ with .url }}<a href="{{ . }}" class="underline">{{ end }}
+          {{- .text | markdownify -}}
+          {{- if .url }}</a>{{ end }}
+          {{ with .year }}({{ . }}){{ end }}
+        </span>
+      </div>
+    {{ end }}
+  {{ end }}
+
+  {{ if or $has_attachments $item.Params.abstract }}
+  {{/* ONE flex row holding the Summary toggle and the PDF/companion/DOI links, so
+       they share a baseline. The <details> is display:contents (see custom.css), so
+       its <summary> becomes a direct flex item on this row while its panel becomes a
+       separate item with flex-basis:100%, dropping to its own full-width line. That
+       is what lets the toggle sit inline while the summary text spans the entry.
+       Summary comes first in source order, so it renders leftmost. */}}
+  <div class="hb-links-row">
+    {{ with $item.Params.abstract }}
+      {{/* Both icons are rendered and CSS shows one, since an inline SVG cannot be
+           swapped by CSS alone. Drawn via the theme's own get_icon partial so they
+           come from the same heroicons set as the PDF/DOI buttons rather than
+           hand-pasted paths. */}}
+      <details class="hb-inline-summary">
+        <summary class="hb-attachment-link hb-attachment-link-small hb-summary-toggle">
+          <span class="hb-ico hb-ico-closed" aria-hidden="true">
+            {{ partial "functions/get_icon" (dict "name" "hero/plus-circle" "attributes" "style=\"height: 1.15em\"") }}
+          </span>
+          <span class="hb-ico hb-ico-open" aria-hidden="true">
+            {{ partial "functions/get_icon" (dict "name" "hero/minus-circle" "attributes" "style=\"height: 1.15em\"") }}
+          </span>
+          <span>What&rsquo;s this about?</span>
+        </summary>
+        <div class="hb-inline-summary-body">{{ . | markdownify }}</div>
+      </details>
+    {{ end }}
+    {{ if $has_attachments }}
+      {{ partial "page_links" (dict "page" $item "is_list" 1) }}
+    {{ end }}
+  </div>
+  {{ end }}
+</div>

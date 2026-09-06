@@ -1,0 +1,140 @@
+{{/* Research-theme filter chips for /research/.
+
+     Progressive enhancement: each chip is a real link to its /topics/<x>/ page, so
+     with JavaScript off (or if this script errors) the chips still work as
+     navigation. JS intercepts the clicks and turns them into in-page filters
+     instead, which is the only way to express an intersection of two themes --
+     something the taxonomy pages cannot do.
+
+     Filtering hides `.pub-list-item[data-topics]` entries (the attribute is set in
+     layouts/_partials/views/citation-summary.html) and then hides any collection
+     section left with nothing visible, so empty group headings do not linger. */}}
+{{ $block := .wcBlock }}
+{{ $page := .wcPage }}
+{{ $terms := site.Taxonomies.topics }}
+
+<div class="flex flex-col items-center max-w-prose mx-auto gap-3 justify-center px-6 md:px-0">
+  {{ with $block.content.title }}
+    <div class="mb-6 text-3xl font-bold text-gray-900 dark:text-white">{{ . | markdownify }}</div>
+  {{ end }}
+  {{ with $block.content.text }}<p>{{ . | markdownify }}</p>{{ end }}
+</div>
+
+{{ if $terms }}
+<style>
+/* Layout (max-width, margin, padding, justification) is deliberately NOT set here.
+   An inline <style> comes later in document order than the external stylesheet, so
+   anything set here would override assets/css/custom.css and defeat the site-wide
+   left inset. Only cosmetics below. */
+.tf-chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.tf-chip{display:inline-flex;align-items:center;gap:.375rem;border:1px solid #d1d5db;border-radius:999px;
+  padding:.3rem .75rem;font-size:.8125rem;line-height:1.2;text-decoration:none;color:inherit;
+  background:transparent;cursor:pointer;font-family:inherit}
+.tf-chip:hover{border-color:#9ca3af}
+.tf-chip[aria-pressed="true"]{background:#FAEEDA;border-color:#BA7517;color:#633806}
+.tf-chip .tf-n{font-size:.6875rem;opacity:.65}
+.tf-bar{display:flex;align-items:center;gap:1rem;margin-top:.75rem;
+  font-size:.75rem;color:#6b7280}
+.tf-bar button{font-family:inherit;font-size:.75rem;background:none;border:none;padding:0;
+  text-decoration:underline;cursor:pointer;color:inherit}
+.tf-bar label{display:inline-flex;align-items:center;gap:.375rem;cursor:pointer}
+.tf-hidden{display:none !important}
+@media (prefers-color-scheme: dark){
+  .tf-chip{border-color:#4b5563}
+  .tf-chip[aria-pressed="true"]{background:#633806;border-color:#EF9F27;color:#FAEEDA}
+  .tf-bar{color:#9ca3af}
+}
+</style>
+
+<div class="tf-wrap" id="topic-filter" data-nojs="1">
+  <div class="tf-chips">
+    {{ range $name, $pages := $terms }}
+      {{ $t := site.GetPage (printf "topics/%s" $name) }}
+      <a class="tf-chip" role="button" aria-pressed="false"
+         data-topic="{{ lower (or (and $t $t.LinkTitle) $name) }}"
+         href="{{ with $t }}{{ .RelPermalink }}{{ else }}/topics/{{ $name }}/{{ end }}">
+        {{ with $t }}{{ .LinkTitle }}{{ else }}{{ $name }}{{ end }}
+        <span class="tf-n">{{ len $pages }}</span>
+      </a>
+    {{ end }}
+  </div>
+  <div class="tf-bar">
+    <button type="button" data-tf-clear hidden>Show all</button>
+    <label hidden data-tf-andwrap><input type="checkbox" data-tf-and> Match all selected</label>
+    <span data-tf-count aria-live="polite"></span>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Must wait for the whole document: this block renders ABOVE the collection
+  // blocks it filters, so at parse time none of the .pub-list-item elements exist
+  // yet and the script would bail on items.length === 0.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  function init() {
+  var root = document.getElementById('topic-filter');
+  if (!root) return;
+  var items = Array.prototype.slice.call(document.querySelectorAll('.pub-list-item[data-topics]'));
+  if (!items.length) return;               // nothing to filter; leave chips as links
+
+  var chips   = Array.prototype.slice.call(root.querySelectorAll('.tf-chip'));
+  var clear   = root.querySelector('[data-tf-clear]');
+  var andBox  = root.querySelector('[data-tf-and]');
+  var andWrap = root.querySelector('[data-tf-andwrap]');
+  var out     = root.querySelector('[data-tf-count]');
+  var sel     = [];
+
+  root.removeAttribute('data-nojs');
+  clear.hidden = false; andWrap.hidden = false;
+
+  function topicsOf(el) {
+    var v = el.getAttribute('data-topics');
+    return v ? v.split('|') : [];
+  }
+  function apply() {
+    var all = !sel.length, shown = 0, and = andBox.checked;
+    items.forEach(function (el) {
+      var t = topicsOf(el);
+      var ok = all || (and
+        ? sel.every(function (s) { return t.indexOf(s) > -1; })
+        : sel.some(function (s) { return t.indexOf(s) > -1; }));
+      el.classList.toggle('tf-hidden', !ok);
+      if (ok) shown++;
+    });
+    // hide any collection section with no visible entries, heading included
+    document.querySelectorAll('section').forEach(function (sec) {
+      var own = sec.querySelectorAll('.pub-list-item[data-topics]');
+      if (!own.length) return;
+      var vis = Array.prototype.filter.call(own, function (el) {
+        return !el.classList.contains('tf-hidden');
+      }).length;
+      sec.classList.toggle('tf-hidden', vis === 0);
+    });
+    out.textContent = all ? items.length + ' papers'
+                          : shown + ' of ' + items.length + ' shown';
+    clear.style.visibility = all ? 'hidden' : 'visible';
+  }
+  chips.forEach(function (c) {
+    c.addEventListener('click', function (e) {
+      e.preventDefault();                  // JS on: filter rather than navigate
+      var k = c.getAttribute('data-topic'), i = sel.indexOf(k);
+      if (i > -1) sel.splice(i, 1); else sel.push(k);
+      c.setAttribute('aria-pressed', i > -1 ? 'false' : 'true');
+      apply();
+    });
+  });
+  andBox.addEventListener('change', apply);
+  clear.addEventListener('click', function () {
+    sel = [];
+    chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+    apply();
+  });
+  apply();
+  }
+})();
+</script>
+{{ end }}

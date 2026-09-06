@@ -1,0 +1,25 @@
+{{/* Compact award list for a publication page, read from the page's own `awards`
+     front matter so the data is not duplicated in prose.
+
+     Replaces the theme's `> [!NOTE]` callout, which rendered awards in a large blue
+     information panel labelled "Note" -- ~657x240px of the heaviest element on an
+     otherwise three-line page, and semantically wrong (a prize is not a note).
+
+     Inline styles rather than Tailwind classes: classes used only inside content
+     markdown are at the mercy of Tailwind's content scan, and a silently unstyled
+     award line would be worse than a verbose template. */}}
+{{ with .Page.Params.awards }}
+<div style="margin: 0.75rem 0 0;">
+  {{ range . }}
+  <div style="display:flex; gap:0.5rem; align-items:flex-start; font-size:0.95rem; line-height:1.5; color:#854F0B; margin-bottom:0.3rem;">
+    <span aria-hidden="true" style="flex-shrink:0;">&#127942;</span>
+    <span>
+      {{ with .url }}<a href="{{ . }}" style="color:#854F0B; text-decoration:underline;">{{ end }}
+      {{- .text | markdownify -}}
+      {{- if .url }}</a>{{ end }}
+      {{ with .year }} ({{ . }}){{ end }}
+    </span>
+  </div>
+  {{ end }}
+</div>
+{{ end }}
